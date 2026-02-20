@@ -10,5 +10,5 @@ venv/
 # Лог-файли
 *.log
 
-*.env
-*.env.dev
+#*.env
+#*.env.dev
