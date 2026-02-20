@@ -1,0 +1,55 @@
+from contextlib import asynccontextmanager
+from sqlalchemy.ext.asyncio import (
+    async_sessionmaker,
+    create_async_engine,
+    AsyncEngine,
+    AsyncSession,
+)
+from typing import AsyncGenerator
+from sqlalchemy.engine import URL
+from config import settings
+from sqlalchemy.orm import DeclarativeBase
+
+
+class DBHelper:
+    def __init__(
+        self,
+        *,
+        url: str | URL,
+        echo: bool,
+    ) -> None:
+        self._engine: AsyncEngine = create_async_engine(
+            url,
+            echo=echo,
+        )
+        self._async_session_maker: async_sessionmaker[AsyncSession] = (
+            async_sessionmaker(
+                bind=self._engine,
+                expire_on_commit=False,
+                autoflush=False,
+                autocommit=False,
+            )
+        )
+
+    @asynccontextmanager
+    async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
+        async with self._async_session_maker() as session:
+            try:
+                yield session
+                await session.commit()
+            except Exception:
+                await session.rollback()
+                raise
+
+    async def create_tables(self, base: DeclarativeBase):
+        async with self._engine.begin() as conn:
+            await conn.run_sync(base.metadata.create_all)
+
+    async def dispose(self):
+        await self._engine.dispose()
+
+
+db_helper = DBHelper(
+    url=settings.db.dsn,
+    echo=settings.db.echo,
+)
