@@ -1,6 +1,7 @@
+import re
 import aiohttp
 from bs4 import BeautifulSoup
-
+from config import HEADERS
 from db import Country
 
 
@@ -8,10 +9,7 @@ class WikiParser:
     url = "https://en.wikipedia.org/w/index.php?title=List_of_countries_by_population_(United_Nations)&oldid=1215058959"
 
     async def fetch_html(self) -> str:
-        headers = {
-            "User-Agent": "MyProject/1.0 (+https://example.com/contact; email: your_email@example.com)",
-        }
-        async with aiohttp.ClientSession(headers=headers) as session:
+        async with aiohttp.ClientSession(headers=HEADERS) as session:
             async with session.get(self.url) as resp:
                 if resp.status == 200:
                     return await resp.text()
@@ -33,9 +31,9 @@ class WikiParser:
             if len(cols) < 6:
                 continue
 
-            country = cols[0].text.strip()
-            region = cols[4].text.strip()
-            str_population = cols[2].text.strip().replace(",", "")
+            country = re.sub(r"\[\w*]", "", cols[0].get_text(strip=True))
+            region = cols[4].get_text(strip=True)
+            str_population = cols[2].get_text(strip=True).replace(",", "")
 
             try:
                 population = int(str_population)

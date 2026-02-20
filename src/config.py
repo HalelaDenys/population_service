@@ -4,6 +4,10 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+HEADERS = {
+    "User-Agent": "MyProject/1.0 (+https://example.com/contact; email: your_email@example.com)",
+}
+
 
 class DBConfig(BaseModel):
 
