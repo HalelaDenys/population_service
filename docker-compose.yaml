@@ -19,5 +19,16 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  get_data:
+    build: .
+    container_name: get_data_service
+    env_file:
+      - .env
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+#    command: poetry run python src/get_data.py
+
+
 volumes:
   postgres_data:
