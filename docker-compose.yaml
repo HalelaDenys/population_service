@@ -27,8 +27,17 @@ services:
     depends_on:
       postgres_db:
         condition: service_healthy
-#    command: poetry run python src/get_data.py
+    command: poetry run python src/get_data.py
 
+  print_data:
+    build: .
+    container_name: print_data_service
+    env_file:
+      - .env
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+    command: poetry run python src/print_data.py
 
 volumes:
   postgres_data:
