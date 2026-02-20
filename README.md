@@ -1,15 +1,21 @@
-population_service/
-│
-├── docker-compose.yml
-├── Dockerfile
-├── requirements.txt
-├── .env
-│
-└── src/
-    ├── db.py             # SQLAlchemy engine, Base, сесія
-    ├── models.py         # ORM-модель Country
-    ├── parser.py         # парсер сторінки
-    ├── repository.py     # клас для роботи з ORM
-    ├── services.py       # логіка load_data та print_data
-    ├── get_data.py       # контейнер get_data
-    └── print_data.py     # контейнер print_data
+# Population Service
+
+Population Service - асинхронний парсер даних про населення країн за регіонами.  
+Скрипт отримує дані з Wikipedia, зберігає їх у базі даних і дозволяє отримувати статистику за регіонами.
+
+---
+
+## Інсталювання
+
+1. Клонуємо репозиторій:
+```bash
+git clone https://github.com/HalelaDenys/population_service.git
+cd population_service
+```
+2. Запустить докер та ведіть команди:
+
+```bash
+docker-compose up postgres_db -d
+docker-compose up get_data
+docker-compose up print_data
+```
